@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow — Gestão de Tarefas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="brand">
+                <span class="brand-icon">✨</span>
+                <span class="brand-name">TaskFlow</span>
+                <span class="badge-pro">PRO v1.0</span>
+            </div>
+            <div class="user-profile">
+                <span class="user-name">Minha Workspace</span>
+                <div class="avatar">TF</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <section class="dashboard-section">
+            <div class="dashboard-header">
+                <h2>Visão Geral da Produtividade</h2>
+                <p>Acompanhe o estado atual dos seus projetos e tarefas em tempo real.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-total">📊</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total de Tarefas</span>
+                        <span class="stat-number" id="total-tasks">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-todo">⏳</div>
+                    <div class="stat-info">
+                        <span class="stat-label">A Fazer</span>
+                        <span class="stat-number" id="pending-tasks">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-progress">⚡</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Em Andamento</span>
+                        <span class="stat-number" id="progress-tasks">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-done">🎯</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Concluídas</span>
+                        <span class="stat-number" id="completed-tasks">0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="workspace-grid">
+            <aside class="panel-card form-panel">
+                <div class="panel-header">
+                    <h3 id="form-title">Nova Tarefa</h3>
+                    <p class="panel-subtitle">Preencha os detalhes e escolha a coluna inicial.</p>
+                </div>
+
+                <form id="task-form" onsubmit="return false;">
+                    <input type="hidden" id="task-id">
+                    
+                    <div class="form-group">
+                        <label for="task-title">Título da Tarefa <span class="required">*</span></label>
+                        <input type="text" id="task-title" required placeholder="Ex: Criar apresentação de vendas">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-desc">Descrição / Observações</label>
+                        <textarea id="task-desc" rows="3" placeholder="Adicione notas importantes..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-priority">Prioridade</label>
+                            <select id="task-priority">
+                                <option value="baixa">🟢 Baixa</option>
+                                <option value="media" selected>🟡 Média</option>
+                                <option value="alta">🔴 Alta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-deadline">Data Limite</label>
+                            <input type="date" id="task-deadline">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-status-input">Coluna / Status Inicial</label>
+                        <select id="task-status-input">
+                            <option value="todo" selected>⏳ A Fazer</option>
+                            <option value="in_progress">⚡ Em Andamento</option>
+                            <option value="done">🎯 Concluída</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="btn-save" class="btn btn-primary">
+                            + Salvar Tarefa
+                        </button>
+                        <button type="button" id="btn-cancel" class="btn btn-secondary" style="display: none;">Cancelar</button>
+                    </div>
+                </form>
+
+                <hr class="divider">
+
+                <div class="filter-panel">
+                    <h4>Pesquisa & Filtros</h4>
+                    <div class="form-group">
+                        <input type="text" id="search-input" placeholder="🔍 Pesquisar pelo título...">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <select id="filter-priority">
+                                <option value="">Todas as Prioridades</option>
+                                <option value="baixa">Baixa</option>
+                                <option value="media">Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="filter-status">
+                                <option value="">Todos os Status</option>
+                                <option value="todo">A Fazer</option>
+                                <option value="in_progress">Em Andamento</option>
+                                <option value="done">Concluídas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-clear-filters" class="btn btn-outline btn-full">Limpar Filtros</button>
+                </div>
+            </aside>
+
+            <!-- Quadro Kanban preparado para Arrastar e Soltar (Drag & Drop) -->
+            <main class="kanban-section">
+                <div class="kanban-board">
+                    <div class="kanban-column" id="col-todo" ondragover="allowDrop(event)" ondrop="dropTask(event, 'todo')">
+                        <div class="column-header">
+                            <span class="column-dot dot-todo"></span>
+                            <h3>A Fazer</h3>
+                        </div>
+                        <div class="task-list" id="list-todo"></div>
+                    </div>
+
+                    <div class="kanban-column" id="col-in-progress" ondragover="allowDrop(event)" ondrop="dropTask(event, 'in_progress')">
+                        <div class="column-header">
+                            <span class="column-dot dot-progress"></span>
+                            <h3>Em Andamento</h3>
+                        </div>
+                        <div class="task-list" id="list-in-progress"></div>
+                    </div>
+
+                    <div class="kanban-column" id="col-done" ondragover="allowDrop(event)" ondrop="dropTask(event, 'done')">
+                        <div class="column-header">
+                            <span class="column-dot dot-done"></span>
+                            <h3>Concluídas</h3>
+                        </div>
+                        <div class="task-list" id="list-done"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
